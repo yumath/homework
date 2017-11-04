@@ -1,3 +1,3 @@
-# my-Distance-Matric-Learning
+# DML
 
 this is just a homework.
