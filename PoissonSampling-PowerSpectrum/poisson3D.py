@@ -148,9 +148,12 @@ def PowerSpectrum3D(points, radius):
                 f_y = -2 * black_radius + scale / Density_y * j
                 f_z = -2 * black_radius + scale / Density_z * k
                 # 设置扰动，去掉中间的十字架
-                bias = random.uniform(0, scale / max(Density_x, Density_y, Density_z))
+                bias = scale / max(Density_x, Density_y, Density_z)
+                f_x = random.uniform(f_x-bias, f_x+bias)
+                f_y = random.uniform(f_y-bias, f_y+bias)
+                f_z = random.uniform(f_z-bias, f_z+bias)
                 # 计算得到频谱图中的f值
-                f = np.array([f_x + bias, f_y - bias, f_z + bias])
+                f = np.array([f_x, f_y, f_z])
                 cos_sum, sin_sum = 0, 0
                 for l in range(N):
                     s = points[l].vectorize()
