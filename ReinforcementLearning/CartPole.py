@@ -18,7 +18,7 @@ STATE_BOUNDS[3] = [-math.radians(50), math.radians(50)]
 ACTION_INDEX = len(NUM_BUCKETS)
 
 ## Creating a Q-Table for each state-action pair
-q_table = np.zeros(NUM_BUCKETS + (NUM_ACTIONS,))
+q_table = np.zeros(NUM_BUCKETS + (NUM_ACTIONS,))    #拼接元组操作
 
 ## Learning related constants
 MIN_EXPLORE_RATE = 0.01
