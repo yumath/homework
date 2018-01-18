@@ -167,8 +167,6 @@ def DrawVerticalView(points, radius):
     绘制 俯视图
     :param points: poisson采样出的点
     :param radius: 采样半径
-    :param length: 泊松采样的区域长
-    :param width: 宽
     :return: 直接绘制图片
     '''
     N = len(points)  # 采样点数
@@ -180,7 +178,7 @@ def DrawVerticalView(points, radius):
     Density_x = 200
     Density_y = 200
     # 初始化为0
-    P = np.zeros((Density_x, Density_y))
+    P_Vertical = np.zeros((Density_x, Density_y))
     # 计算功率值
     for i in range(Density_x):
         for j in range(Density_y):
@@ -191,7 +189,7 @@ def DrawVerticalView(points, radius):
             bias = scale / max(Density_x, Density_y)
             f_x = random.uniform(f_x-bias, f_x+bias)
             f_y = random.uniform(f_y-bias, f_y+bias)
-            f_z = random.uniform(-bias, bias)
+            f_z = random.uniform(0.1-bias, 0.1+bias)    #设计z的值，距离xy平面偏移
             # 计算得到频谱图中的f值
             f = np.array([f_x, f_y, f_z])
             cos_sum, sin_sum = 0, 0
@@ -199,15 +197,111 @@ def DrawVerticalView(points, radius):
                 s = points[l].vectorize()
                 cos_sum += math.cos(2 * math.pi * np.dot(s, f))
                 sin_sum += math.sin(2 * math.pi * np.dot(s, f))
-            P[i][j] = (cos_sum ** 2 + sin_sum ** 2) / N
+            P_Vertical[i][j] = (cos_sum ** 2 + sin_sum ** 2) / N
     #绘制
-    for i in range(P.shape[0]):
-        for j in range(P.shape[1]):
-            if P[i][j]>=1:
-                P[i][j]=255
+    for i in range(P_Vertical.shape[0]):
+        for j in range(P_Vertical.shape[1]):
+            if P_Vertical[i][j]>=1:
+                P_Vertical[i][j]=255
+    plt.subplot(221)
+    plt.title('Vertical View')
     #将矩阵mat_z以image的形式显示出来，双线性插值，灰度图，原点在下方，坐标范围定义为extent
-    plt.imshow(P, interpolation='bilinear', cmap=matplotlib.cm.gray, origin='lower')
-    plt.show()
+    plt.imshow(P_Vertical, interpolation='bilinear', cmap=matplotlib.cm.gray, origin='lower')
+    #plt.show()
+
+def DrawFrontlView(points, radius):
+    '''
+    绘制 正视图
+    :param points: poisson采样出的点
+    :param radius: 采样半径
+    :return: 直接绘制图片
+    '''
+    N = len(points)  # 采样点数
+    # 黑圈的半径
+    black_radius = 1 / radius
+    #设置显示范围
+    scale = 4 * black_radius
+    # 设置采样强度
+    Density_y = 200
+    Density_z = 200
+    # 初始化为0
+    P_Front = np.zeros((Density_y, Density_z))
+    # 计算功率值
+    for i in range(Density_y):
+        for j in range(Density_z):
+            # 计算每个频谱上采样点的f坐标值
+            f_y = -2 * black_radius + scale / Density_y * i
+            f_z = -2 * black_radius + scale / Density_z * j
+            # 设置扰动，去掉中间的十字架
+            bias = scale / max(Density_y, Density_z)
+            f_x = random.uniform(0.1-bias, 0.1+bias)    #设计x的值，距离yz平面偏移
+            f_y = random.uniform(f_y-bias, f_y+bias)
+            f_z = random.uniform(f_z-bias, f_z+bias)
+            # 计算得到频谱图中的f值
+            f = np.array([f_x, f_y, f_z])
+            cos_sum, sin_sum = 0, 0
+            for l in range(N):
+                s = points[l].vectorize()
+                cos_sum += math.cos(2 * math.pi * np.dot(s, f))
+                sin_sum += math.sin(2 * math.pi * np.dot(s, f))
+            P_Front[i][j] = (cos_sum ** 2 + sin_sum ** 2) / N
+    #绘制
+    for i in range(P_Front.shape[0]):
+        for j in range(P_Front.shape[1]):
+            if P_Front[i][j]>=1:
+                P_Front[i][j]=255
+    plt.subplot(222)
+    plt.title('Front View')
+    #将矩阵mat_z以image的形式显示出来，双线性插值，灰度图，原点在下方，坐标范围定义为extent
+    plt.imshow(P_Front, interpolation='bilinear', cmap=matplotlib.cm.gray, origin='lower')
+    #plt.show()
+
+def DrawLeftlView(points, radius):
+    '''
+    绘制 左视图
+    :param points: poisson采样出的点
+    :param radius: 采样半径
+    :return: 直接绘制图片
+    '''
+    N = len(points)  # 采样点数
+    # 黑圈的半径
+    black_radius = 1 / radius
+    #设置显示范围
+    scale = 4 * black_radius
+    # 设置采样强度
+    Density_z = 200
+    Density_x = 200
+    # 初始化为0
+    P_Left = np.zeros((Density_z, Density_x))
+    # 计算功率值
+    for i in range(Density_z):
+        for j in range(Density_x):
+            # 计算每个频谱上采样点的f坐标值
+            f_z = -2 * black_radius + scale / Density_z * i
+            f_x = -2 * black_radius + scale / Density_x * j
+            # 设置扰动，去掉中间的十字架
+            bias = scale / max(Density_x, Density_z)
+            f_x = random.uniform(f_x-bias, f_x+bias)    #设计x的值，距离yz平面偏移
+            f_y = random.uniform(0.1-bias, 0.1+bias)
+            f_z = random.uniform(f_z-bias, f_z+bias)
+            # 计算得到频谱图中的f值
+            f = np.array([f_x, f_y, f_z])
+            cos_sum, sin_sum = 0, 0
+            for l in range(N):
+                s = points[l].vectorize()
+                cos_sum += math.cos(2 * math.pi * np.dot(s, f))
+                sin_sum += math.sin(2 * math.pi * np.dot(s, f))
+            P_Left[i][j] = (cos_sum ** 2 + sin_sum ** 2) / N
+    #绘制
+    for i in range(P_Left.shape[0]):
+        for j in range(P_Left.shape[1]):
+            if P_Left[i][j]>=1:
+                P_Left[i][j]=255
+    plt.subplot(223)
+    plt.title('Left View')
+    #将矩阵mat_z以image的形式显示出来，双线性插值，灰度图，原点在下方，坐标范围定义为extent
+    plt.imshow(P_Left, interpolation='bilinear', cmap=matplotlib.cm.gray, origin='lower')
+    #plt.show()
 
 if __name__ == '__main__':
     radius = 1
@@ -218,3 +312,6 @@ if __name__ == '__main__':
     #PowerSpectrum3D(radius, length, width, height)
     points = PoissonSampling3D(radius, length, width, height, k)
     DrawVerticalView(points, radius)
+    DrawFrontlView(points, radius)
+    DrawLeftlView(points, radius)
+    plt.show()  #画图
