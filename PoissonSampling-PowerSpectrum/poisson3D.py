@@ -314,4 +314,8 @@ if __name__ == '__main__':
     DrawVerticalView(points, radius)
     DrawFrontlView(points, radius)
     DrawLeftlView(points, radius)
+<<<<<<< HEAD
     plt.show()  #画图
+=======
+    plt.show()  #画图
+>>>>>>> 1a17d91bfdd1c7ab9b7bcc99f2a742d8b0436f3b

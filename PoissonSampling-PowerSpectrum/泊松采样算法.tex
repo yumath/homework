@@ -1,0 +1,60 @@
+\documentclass[11pt]{ctexart}  
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}  
+\usepackage{algorithm}  
+\usepackage{algorithmicx}  
+\usepackage{algpseudocode}  
+\usepackage{amsmath}  
+  
+\floatname{algorithm}{算法}  
+\renewcommand{\algorithmicrequire}{\textbf{输入:}}  
+\renewcommand{\algorithmicensure}{\textbf{输出:}}  
+  
+\begin{document}  
+    \begin{algorithm}  
+        \caption{三维泊松采样}  
+        \begin{algorithmic}[1] %每行显示行号  
+            \Require 采样圆盘的半径$radius$，三维采样空间的尺寸$len,wid,hei$，随机探测的阈值$k$
+            \Ensure 泊松采样得到的点
+            \Function {$PoissonSampling$}{$radius, len, wid, hei, k$}  
+                \State 以$radius/\sqrt{n}$为步长，将空间均匀切分为方格
+                \State 初始化一维空数组$active\_list$作为活跃点列表，$points$存储采样出的点
+                \State 初始化值全为-1的三维数组$grids$，用于记录格子中点的索引
+                \State 随机打一个点$Point_0$作为起始点，并将其插入$active\_list$与$points$中
+                \State $Point_0$所在格子的索引值$index$，$grids[index]=0$
+                \While {$active\_list$非空}  
+                    \State 从$active\_list$中随机选取点$Point_i$，在以其为中心的$r$到$2r$之间的球环内随机打$k$个点
+                    %\State 在以$Point_i$为中心，距离$Point_i$大于$radius$且小于2倍$radius$的圆环内，随机打$k$个点
+                    \State $is\_succeed\_paint\_dot = False$//设置flag
+                    \For {$j=0$ to $k$}
+                    \State 对于每个随机点$Point_j$，查找其周围与其半径为$radius$的球相交的格子
+                    \State $is\_intersect = False$//设置flag
+                    \ForAll {与以$Point_j$为球心，半径为$radius$的球相交的格子}
+                   	 \State 按格子的索引值$index_j$挨个查找$grid$数组中，其位置上的数值是否等于-1
+	 			\If {$grid[index_j] == -1$} $continue$
+				\Else
+				\State $point\_index = grid[index_j]$
+				\If {点$points[point\_index]$与$Point_j$的距离大于$radius$} $continue$
+				\Else
+				\State $is\_intersect = True$
+				\State $break$//当前点$Point_j$不符合要求，继续打点
+				\EndIf
+				\EndIf
+                    \EndFor
+                    \If {$is\_intersect = False$}//表示打点成功，与周围的格子均不相交
+                    \State $grid[index_j] = len(points)$
+                    \State 将$Point_j$分别插入$points$及$active\_list$中
+                    \State $is\_succeed\_paint\_dot = True$
+                    \Else $continue$
+                    \EndIf
+                    \EndFor
+                    \If {$is\_succeed\_paint\_dot = False$}
+                    \State 即打$k$个点都失败了，将$Point_i$从$active\_list$中删除
+                    \EndIf
+                \EndWhile  
+                \State \Return{$points$}  
+            \EndFunction  
+            \State  
+
+        \end{algorithmic}  
+    \end{algorithm}  
+\end{document}  
