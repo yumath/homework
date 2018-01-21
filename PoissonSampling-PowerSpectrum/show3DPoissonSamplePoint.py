@@ -10,7 +10,7 @@ ax = fig.add_subplot(111, projection='3d')
 
 if __name__ == '__main__':
 
-    radius = 3
+    radius = 2
     length = 20
     width = 20
     height = 20
